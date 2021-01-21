@@ -42,7 +42,7 @@ resource "pagerduty_team_membership" "bart-member" {
 
 # /* escalation policy */
 resource "pagerduty_escalation_policy" "ep" {
-  name      = "API Escalation Policy"
+  name      = "Checkout Service Escalation Policy"
   num_loops = 3
   rule {
     escalation_delay_in_minutes = 30
@@ -59,7 +59,7 @@ data "pagerduty_user" "susan" {
 
 # /* SCHEDULE */
 resource "pagerduty_schedule" "foo" {
-  name      = "Terraform Managed"
+  name      = "Checkout Service Schedule"
   time_zone = "America/Los_Angeles"
 
   layer {
@@ -93,13 +93,13 @@ resource "pagerduty_schedule" "foo" {
 
 # /* SERVICES */
 resource "pagerduty_service" "api" {
-  name              = "The API"
+  name              = "Checkout API"
   escalation_policy = pagerduty_escalation_policy.ep.id
   alert_creation = "create_alerts_and_incidents"
 }
 
 resource "pagerduty_service" "db" {
-  name              = "The DB"
+  name              = "Checkout DB"
   escalation_policy = pagerduty_escalation_policy.ep.id
   alert_creation = "create_alerts_and_incidents"
 }
