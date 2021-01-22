@@ -53,28 +53,10 @@ resource "pagerduty_escalation_policy" "ep" {
   }
 }
 
-data "pagerduty_user" "susan" {
-  email = "susan.devel@gmail.com"
-}
-
 # /* SCHEDULE */
 resource "pagerduty_schedule" "foo" {
   name      = "Checkout Service Schedule"
   time_zone = "America/Los_Angeles"
-
-  layer {
-    name                         = "Day Shift"
-    start                        = "2020-12-07T20:00:00-08:00"
-    rotation_virtual_start       = "2020-12-07T08:00:00-08:00"
-    rotation_turn_length_seconds = 86400
-    users                        = [data.pagerduty_user.susan.id]
-
-    restriction {
-      type              = "daily_restriction"
-      start_time_of_day = "08:00:00"
-      duration_seconds  = 32400
-    }
-  }
   
   layer {
     name                         = "Night Shift"
