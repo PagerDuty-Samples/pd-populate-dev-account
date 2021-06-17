@@ -2,6 +2,15 @@ provider "pagerduty" {
   token = "your_api_key"
 }
 
+terraform {
+  required_providers {
+    pagerduty = {
+      source  = "PagerDuty/pagerduty"
+      version = ">= 1.9.7"
+    }
+  }
+}
+
 /* USERS */
 resource "pagerduty_user" "bart" {
   email       = "bart@simpson.com"

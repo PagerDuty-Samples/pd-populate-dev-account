@@ -34,4 +34,4 @@ The code here will create the following resources in PagerDuty.
 - **Event Rules**
 
 ## Questions
-If you have any questions or issues with this sample please post an Issue on this repository or create a post in the [PagerDuty Developer Community](https://community.pagerduty.com/c/dev/?utm_source=web&utm_campaign=dev_top_nav&utm_medium=a).
+If you have any questions or issues with this sample please post an Issue on this repository or create a post in the [PagerDuty Developer Community](https://community.pagerduty.com/forum/c/developer).
