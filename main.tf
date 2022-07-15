@@ -1,26 +1,26 @@
 provider "pagerduty" {
-  token = "your_api_key"
+  token = "your_access_token"
 }
 
 terraform {
   required_providers {
     pagerduty = {
       source  = "PagerDuty/pagerduty"
-      version = "2.3.0"
+      version = "2.5.2"
     }
   }
 }
 
 /* USERS */
 resource "pagerduty_user" "bart" {
-  email       = "bart@simpson.com"
+  email       = "bart@foo.test"
   name        = "Bart Simpson"
   role        = "limited_user"
   description = "Spikey-haired boy"
   job_title   = "Rascal"
 }
 resource "pagerduty_user" "lisa" {
-  email       = "lisa@simpson.com"
+  email       = "lisa@foo.test"
   name        = "Lisa Simpson"
   role        = "admin"
   description = "The brains"
