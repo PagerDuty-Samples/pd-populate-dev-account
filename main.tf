@@ -95,6 +95,12 @@ resource "pagerduty_service" "db" {
   alert_creation = "create_alerts_and_incidents"
 }
 
+resource "pagerduty_service" "unrouted" {
+  name              = "Checkout Unrouted"
+  escalation_policy = pagerduty_escalation_policy.ep.id
+  alert_creation = "create_alerts_and_incidents"
+}
+
 /* SERVICE INTEGRATION */
 data "pagerduty_vendor" "cloudwatch" {
   name = "Cloudwatch"
@@ -147,107 +153,91 @@ resource "pagerduty_service_dependency" "api-db-service-dependency" {
   }  
 }
 
-/* RULESET */
-resource "pagerduty_ruleset" "api-service" {
-  name = "API Ruleset"
-  team {
-    id = pagerduty_team.simpson.id
-  }
+/* EVENT ORCHESTRATION */
+resource "pagerduty_event_orchestration" "health-check" {
+  name = "Health Check Orchestration"
+  team  = pagerduty_team.simpson.id
 }
 
-/* RULESET RULES (EVENT RULES) */
-resource "pagerduty_ruleset_rule" "health-check" {
-  ruleset = pagerduty_ruleset.api-service.id 
-  position = 0
-  disabled = false
-  conditions {
-    operator = "and"
-    subconditions {
-      operator = "contains"
-      parameter {
-        value = "API Health Check violated API Request Failure"
-        path = "payload.summary"
+/* EVENT ORCHESTRATION ROUTER */
+resource "pagerduty_event_orchestration_router" "health-check" {
+  event_orchestration = pagerduty_event_orchestration.health-check.id 
+  set {
+    id = "start"
+    rule {
+      label = "API Failed Health Check--Route to API Service"
+      condition {
+        expression = "event.summary matches part 'API Health Check violated API Request Failure' or event.summary matches part 'Request Response Time is High for prod'"
+      }
+      actions {
+        route_to = pagerduty_service.api.id
+      }
+    }
+    rule {
+      label = "DB Failed Health Check--Route to DB Service"
+      condition {
+        expression = "event.summary matches part 'Error connecting to MySQL' or event.summary matches part 'mysql_long_running_query'"
+      }
+      actions {
+        route_to = pagerduty_service.db.id
       }
     }
   }
-  actions {
-    suppress {
-      value=true
-      threshold_value = 3
-      threshold_time_unit = "minutes"
-      threshold_time_amount = 10
-    }
-    route {
-      value = pagerduty_service.api.id
+  catch_all {
+    actions{
+      route_to = pagerduty_service.unrouted.id
     }
   }
 }
-
-resource "pagerduty_ruleset_rule" "db-connection" {
-  ruleset = pagerduty_ruleset.api-service.id 
-  position = 1
-  disabled = false
-  conditions {
-    operator = "and"
-    subconditions {
-      operator = "contains"
-      parameter {
-        value = "Error connecting to MySQL"
-        path = "payload.summary"
+resource "pagerduty_event_orchestration_service" "api" {
+  service = pagerduty_service.api.id
+  set {
+    id = "start"
+    rule {
+      label = "Suppress API Health Check Failure"
+      
+      condition {
+        expression = "event.summary matches part 'API Health Check violated API Request Failure'"
+      }
+      actions {
+        suspend = 600
+      }
+    }
+    rule {
+      label = "Annotate API"
+      condition {
+        expression = "event.summary matches part 'Request Response Time is High for prod'"
+      }
+      actions {
+        annotate = "This is a great note"
+      }
+    }
+    rule {
+      label = "Slow DB Query Sev to Info"
+      condition {
+        expression = "event.summary matches part 'mysql_long_running_query'"
+      }
+      actions {
+        severity = "info"
       }
     }
   }
-  actions {
-    route {
-      value = pagerduty_service.db.id
-    }
-  }
-}        
-
-resource "pagerduty_ruleset_rule" "high-request-time" {
-  ruleset = pagerduty_ruleset.api-service.id 
-  position = 2
-  disabled = false
-  conditions {
-    operator = "and"
-    subconditions {
-      operator = "contains"
-      parameter {
-        value = "Request Response Time is High for prod"
-        path = "payload.summary"
-      }
-    }
-  }
-  actions {
-    route {
-      value = pagerduty_service.api.id
-    }
-    annotate {
-      value = "Refer to runbook at response.pagerduty.com"
+  catch_all {
+    actions {
+      
     }
   }
 }
 
-resource "pagerduty_ruleset_rule" "mysql-long-running-query" {
-  ruleset = pagerduty_ruleset.api-service.id 
-  position = 3
-  disabled = false
-  conditions {
-    operator = "and"
-    subconditions {
-      operator = "contains"
-      parameter {
-        value = "mysql_long_running_query"
-        path = "payload.summary"
-      }
-    }
-  }
-  actions {
-    route {
-      value = pagerduty_service.api.id
-    }
-    severity {
-      value = "info"
-    }
-  }
-}
+  # actions {
+  #   suppress {
+  #     value=true
+  #     threshold_value = 3
+  #     threshold_time_unit = "minutes"
+  #     threshold_time_amount = 10
+  #   }
+    # route {
+    #   value = pagerduty_service.api.id
+    # }
+#   }
+# }

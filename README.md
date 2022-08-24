@@ -31,7 +31,7 @@ The code here will create the following resources in PagerDuty.
 - **Service Integrations**
 - **Business Service**
 - **Service Dependency**
-- **Event Rules**
+- **Event Orchestration**
 
 ## Questions
 If you have any questions or issues with this sample please post an Issue on this repository or create a post in the [PagerDuty Developer Community](https://community.pagerduty.com/forum/c/developer).
