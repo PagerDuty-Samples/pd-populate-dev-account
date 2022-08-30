@@ -1,5 +1,5 @@
 provider "pagerduty" {
-  token = "u+88bN8ssn6YcCThjP3g"
+  token = "your_api_access_token"
 }
 
 terraform {
@@ -66,7 +66,7 @@ resource "pagerduty_escalation_policy" "ep" {
 resource "pagerduty_schedule" "foo" {
   name      = "Checkout Service Schedule"
   time_zone = "America/Los_Angeles"
-  
+
   layer {
     name                         = "Night Shift"
     start                        = "2020-12-07T20:00:00-08:00"
@@ -86,19 +86,23 @@ resource "pagerduty_schedule" "foo" {
 resource "pagerduty_service" "api" {
   name              = "Checkout API"
   escalation_policy = pagerduty_escalation_policy.ep.id
-  alert_creation = "create_alerts_and_incidents"
+  alert_creation    = "create_alerts_and_incidents"
 }
 
 resource "pagerduty_service" "db" {
   name              = "Checkout DB"
   escalation_policy = pagerduty_escalation_policy.ep.id
-  alert_creation = "create_alerts_and_incidents"
+  alert_creation    = "create_alerts_and_incidents"
 }
 
 resource "pagerduty_service" "unrouted" {
   name              = "Checkout Unrouted"
   escalation_policy = pagerduty_escalation_policy.ep.id
-  alert_creation = "create_alerts_and_incidents"
+  alert_creation    = "create_alerts_and_incidents"
+  auto_pause_notifications_parameters {
+    enabled = true
+    timeout = 900
+  }
 }
 
 /* SERVICE INTEGRATION */
@@ -138,7 +142,7 @@ resource "pagerduty_service_dependency" "api-service-dependency" {
       id   = pagerduty_service.api.id
       type = "service"
     }
-  }  
+  }
 }
 resource "pagerduty_service_dependency" "api-db-service-dependency" {
   dependency {
@@ -150,18 +154,18 @@ resource "pagerduty_service_dependency" "api-db-service-dependency" {
       id   = pagerduty_service.db.id
       type = "service"
     }
-  }  
+  }
 }
 
 /* EVENT ORCHESTRATION */
 resource "pagerduty_event_orchestration" "health-check" {
   name = "Health Check Orchestration"
-  team  = pagerduty_team.simpson.id
+  team = pagerduty_team.simpson.id
 }
 
 /* EVENT ORCHESTRATION ROUTER */
 resource "pagerduty_event_orchestration_router" "health-check" {
-  event_orchestration = pagerduty_event_orchestration.health-check.id 
+  event_orchestration = pagerduty_event_orchestration.health-check.id
   set {
     id = "start"
     rule {
@@ -184,7 +188,7 @@ resource "pagerduty_event_orchestration_router" "health-check" {
     }
   }
   catch_all {
-    actions{
+    actions {
       route_to = pagerduty_service.unrouted.id
     }
   }
@@ -195,7 +199,7 @@ resource "pagerduty_event_orchestration_service" "api" {
     id = "start"
     rule {
       label = "Suppress API Health Check Failure"
-      
+
       condition {
         expression = "event.summary matches part 'API Health Check violated API Request Failure'"
       }
@@ -224,7 +228,7 @@ resource "pagerduty_event_orchestration_service" "api" {
   }
   catch_all {
     actions {
-      
+
     }
   }
 }
