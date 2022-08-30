@@ -1,12 +1,12 @@
 provider "pagerduty" {
-  token = "your_access_token"
+  token = "u+88bN8ssn6YcCThjP3g"
 }
 
 terraform {
   required_providers {
     pagerduty = {
       source  = "PagerDuty/pagerduty"
-      version = "2.6.0"
+      version = "2.6.1"
     }
   }
 }
@@ -228,16 +228,3 @@ resource "pagerduty_event_orchestration_service" "api" {
     }
   }
 }
-
-  # actions {
-  #   suppress {
-  #     value=true
-  #     threshold_value = 3
-  #     threshold_time_unit = "minutes"
-  #     threshold_time_amount = 10
-  #   }
-    # route {
-    #   value = pagerduty_service.api.id
-    # }
-#   }
-# }
