@@ -57,7 +57,7 @@ resource "pagerduty_escalation_policy" "checkout_service" {
     escalation_delay_in_minutes = 30
     target {
       type = "schedule_reference"
-      id   = pagerduty_schedule.foo.id
+      id   = pagerduty_schedule.checkout_service.id
     }
   }
 }
