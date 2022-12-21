@@ -1,6 +1,6 @@
 # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs
 provider "pagerduty" {
-  token = "your_api_access_token"
+  token = "u+eFXALz-UxACESRy7NA"
 }
 
 # USERS
@@ -21,7 +21,6 @@ resource "pagerduty_user" "lisa" {
   description = "The brains"
   job_title   = "Supreme Thinker"
 }
-
 
 # TEAMS
 # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team
@@ -70,8 +69,8 @@ resource "pagerduty_schedule" "checkout_service" {
 
   layer {
     name                         = "Night Shift"
-    start                        = "2020-12-07T20:00:00-08:00"
-    rotation_virtual_start       = "2020-12-07T17:00:00-08:00"
+    start                        = "2022-10-27T20:00:00-08:00"
+    rotation_virtual_start       = "2022-10-27T17:00:00-08:00"
     rotation_turn_length_seconds = 86400
 
     users = [
@@ -81,7 +80,7 @@ resource "pagerduty_schedule" "checkout_service" {
 
     restriction {
       type              = "daily_restriction"
-      start_time_of_day = "17:00:00"
+      start_time_of_day = "07:00:00"
       duration_seconds  = 54000
     }
   }
