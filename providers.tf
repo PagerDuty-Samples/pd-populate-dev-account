@@ -1,3 +1,13 @@
+terraform {
+  required_providers {
+    # see https://registry.terraform.io/providers/PagerDuty/pagerduty/2.7.0
+    pagerduty = {
+      source  = "pagerduty/pagerduty"
+      version = "2.11.2"
+    }
+  }
+}
+
 #
 data "local_file" "input" {
   filename = ".creds" #can be anyfile with your api key in it (don't forget to add it to the .gitignore though)

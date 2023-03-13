@@ -22,10 +22,11 @@ variable "job_title" {
   default = "Assistant to the Regional Manager"
 }
 
+#https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 variable "time_zone" {
   type        = string
   description = "PagerDuty Users TimeZone"
-  default = "GMT"
+  default = "Europe/London"
 }
 
 
