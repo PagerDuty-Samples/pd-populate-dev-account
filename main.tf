@@ -1,7 +1,4 @@
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs
-provider "pagerduty" {
-  token = "your_api_access_token"
-}
+
 
 # USERS
 # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user
@@ -13,262 +10,262 @@ resource "pagerduty_user" "bart" {
   job_title   = "Rascal"
 }
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user
-resource "pagerduty_user" "lisa" {
-  email       = "lisa@foo.test"
-  name        = "Lisa Simpson"
-  role        = "admin"
-  description = "The brains"
-  job_title   = "Supreme Thinker"
-}
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user
+# resource "pagerduty_user" "lisa" {
+#   email       = "lisa@foo.test"
+#   name        = "Lisa Simpson"
+#   role        = "admin"
+#   description = "The brains"
+#   job_title   = "Supreme Thinker"
+# }
 
-# TEAMS
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team
-resource "pagerduty_team" "simpson" {
-  name        = "Simpson"
-  description = "Team of Simpsons"
-}
-
-
-# TEAM MEMBERSHIP
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
-resource "pagerduty_team_membership" "lisa" {
-  user_id = pagerduty_user.lisa.id
-  team_id = pagerduty_team.simpson.id
-  role    = "manager"
-}
-
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
-resource "pagerduty_team_membership" "bart" {
-  user_id = pagerduty_user.bart.id
-  team_id = pagerduty_team.simpson.id
-  role    = "responder"
-}
+# # TEAMS
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team
+# resource "pagerduty_team" "simpson" {
+#   name        = "Simpson"
+#   description = "Team of Simpsons"
+# }
 
 
-# escalation policy
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/escalation_policy
-resource "pagerduty_escalation_policy" "checkout_service" {
-  name      = "Checkout Service Escalation Policy"
-  num_loops = 3
+# # TEAM MEMBERSHIP
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
+# resource "pagerduty_team_membership" "lisa" {
+#   user_id = pagerduty_user.lisa.id
+#   team_id = pagerduty_team.simpson.id
+#   role    = "manager"
+# }
 
-  rule {
-    escalation_delay_in_minutes = 30
-    target {
-      type = "schedule_reference"
-      id   = pagerduty_schedule.checkout_service.id
-    }
-  }
-}
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
+# resource "pagerduty_team_membership" "bart" {
+#   user_id = pagerduty_user.bart.id
+#   team_id = pagerduty_team.simpson.id
+#   role    = "responder"
+# }
 
-# SCHEDULE
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/schedule
-resource "pagerduty_schedule" "checkout_service" {
-  name      = "Checkout Service Schedule"
-  time_zone = "America/Los_Angeles"
 
-  layer {
-    name                         = "Night Shift"
-    start                        = "2022-10-27T20:00:00-08:00"
-    rotation_virtual_start       = "2022-10-27T17:00:00-08:00"
-    rotation_turn_length_seconds = 86400
+# # escalation policy
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/escalation_policy
+# resource "pagerduty_escalation_policy" "checkout_service" {
+#   name      = "Checkout Service Escalation Policy"
+#   num_loops = 3
 
-    users = [
-      pagerduty_user.lisa.id,
-      pagerduty_user.bart.id
-    ]
+#   rule {
+#     escalation_delay_in_minutes = 30
+#     target {
+#       type = "schedule_reference"
+#       id   = pagerduty_schedule.checkout_service.id
+#     }
+#   }
+# }
 
-    restriction {
-      type              = "daily_restriction"
-      start_time_of_day = "07:00:00"
-      duration_seconds  = 54000
-    }
-  }
-}
+# # SCHEDULE
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/schedule
+# resource "pagerduty_schedule" "checkout_service" {
+#   name      = "Checkout Service Schedule"
+#   time_zone = "America/Los_Angeles"
 
-# SERVICES
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
-resource "pagerduty_service" "api" {
-  name              = "Checkout API"
-  escalation_policy = pagerduty_escalation_policy.checkout_service.id
-  alert_creation    = "create_alerts_and_incidents"
-}
+#   layer {
+#     name                         = "Night Shift"
+#     start                        = "2022-10-27T20:00:00-08:00"
+#     rotation_virtual_start       = "2022-10-27T17:00:00-08:00"
+#     rotation_turn_length_seconds = 86400
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
-resource "pagerduty_service" "db" {
-  name              = "Checkout DB"
-  escalation_policy = pagerduty_escalation_policy.checkout_service.id
-  alert_creation    = "create_alerts_and_incidents"
-}
+#     users = [
+#       pagerduty_user.lisa.id,
+#       pagerduty_user.bart.id
+#     ]
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
-resource "pagerduty_service" "unrouted" {
-  name              = "Checkout Unrouted"
-  escalation_policy = pagerduty_escalation_policy.checkout_service.id
-  alert_creation    = "create_alerts_and_incidents"
+#     restriction {
+#       type              = "daily_restriction"
+#       start_time_of_day = "07:00:00"
+#       duration_seconds  = 54000
+#     }
+#   }
+# }
 
-  auto_pause_notifications_parameters {
-    enabled = true
-    timeout = 900
-  }
-}
+# # SERVICES
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
+# resource "pagerduty_service" "api" {
+#   name              = "Checkout API"
+#   escalation_policy = pagerduty_escalation_policy.checkout_service.id
+#   alert_creation    = "create_alerts_and_incidents"
+# }
 
-# SERVICE INTEGRATION
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/data-sources/vendor
-data "pagerduty_vendor" "cloudwatch" {
-  name = "Cloudwatch"
-}
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
+# resource "pagerduty_service" "db" {
+#   name              = "Checkout DB"
+#   escalation_policy = pagerduty_escalation_policy.checkout_service.id
+#   alert_creation    = "create_alerts_and_incidents"
+# }
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_integration
-resource "pagerduty_service_integration" "cloudwatch" {
-  name    = data.pagerduty_vendor.cloudwatch.name
-  service = pagerduty_service.api.id
-  vendor  = data.pagerduty_vendor.cloudwatch.id
-}
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
+# resource "pagerduty_service" "unrouted" {
+#   name              = "Checkout Unrouted"
+#   escalation_policy = pagerduty_escalation_policy.checkout_service.id
+#   alert_creation    = "create_alerts_and_incidents"
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/data-sources/vendor
-data "pagerduty_vendor" "datadog" {
-  name = "Datadog"
-}
+#   auto_pause_notifications_parameters {
+#     enabled = true
+#     timeout = 900
+#   }
+# }
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_integration
-resource "pagerduty_service_integration" "datadog" {
-  name    = data.pagerduty_vendor.datadog.name
-  service = pagerduty_service.api.id
-  vendor  = data.pagerduty_vendor.datadog.id
-}
+# # SERVICE INTEGRATION
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/data-sources/vendor
+# data "pagerduty_vendor" "cloudwatch" {
+#   name = "Cloudwatch"
+# }
 
-# BUSINESS SERVICE
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/business_service
-resource "pagerduty_business_service" "api_business" {
-  name = "API Business"
-}
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_integration
+# resource "pagerduty_service_integration" "cloudwatch" {
+#   name    = data.pagerduty_vendor.cloudwatch.name
+#   service = pagerduty_service.api.id
+#   vendor  = data.pagerduty_vendor.cloudwatch.id
+# }
 
-# SERVICE DEPENDENCY
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_dependency
-resource "pagerduty_service_dependency" "api_service_dependency" {
-  dependency {
-    dependent_service {
-      id   = pagerduty_business_service.api_business.id
-      type = "business_service"
-    }
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/data-sources/vendor
+# data "pagerduty_vendor" "datadog" {
+#   name = "Datadog"
+# }
 
-    supporting_service {
-      id   = pagerduty_service.api.id
-      type = "service"
-    }
-  }
-}
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_integration
+# resource "pagerduty_service_integration" "datadog" {
+#   name    = data.pagerduty_vendor.datadog.name
+#   service = pagerduty_service.api.id
+#   vendor  = data.pagerduty_vendor.datadog.id
+# }
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_dependency
-resource "pagerduty_service_dependency" "api_db_service_dependency" {
-  dependency {
-    dependent_service {
-      id   = pagerduty_business_service.api_business.id
-      type = "business_service"
-    }
+# # BUSINESS SERVICE
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/business_service
+# resource "pagerduty_business_service" "api_business" {
+#   name = "API Business"
+# }
 
-    supporting_service {
-      id   = pagerduty_service.db.id
-      type = "service"
-    }
-  }
-}
+# # SERVICE DEPENDENCY
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_dependency
+# resource "pagerduty_service_dependency" "api_service_dependency" {
+#   dependency {
+#     dependent_service {
+#       id   = pagerduty_business_service.api_business.id
+#       type = "business_service"
+#     }
 
-# EVENT ORCHESTRATION
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/event_orchestration
-resource "pagerduty_event_orchestration" "health_check" {
-  name = "Health Check Orchestration"
-  team = pagerduty_team.simpson.id
-}
+#     supporting_service {
+#       id   = pagerduty_service.api.id
+#       type = "service"
+#     }
+#   }
+# }
 
-# EVENT ORCHESTRATION ROUTER
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/event_orchestration_router
-resource "pagerduty_event_orchestration_router" "health_check" {
-  event_orchestration = pagerduty_event_orchestration.health_check.id
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_dependency
+# resource "pagerduty_service_dependency" "api_db_service_dependency" {
+#   dependency {
+#     dependent_service {
+#       id   = pagerduty_business_service.api_business.id
+#       type = "business_service"
+#     }
 
-  set {
-    id = "start"
+#     supporting_service {
+#       id   = pagerduty_service.db.id
+#       type = "service"
+#     }
+#   }
+# }
 
-    rule {
-      label = "API Failed Health Check--Route to API Service"
+# # EVENT ORCHESTRATION
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/event_orchestration
+# resource "pagerduty_event_orchestration" "health_check" {
+#   name = "Health Check Orchestration"
+#   team = pagerduty_team.simpson.id
+# }
 
-      condition {
-        expression = "event.summary matches part 'API Health Check violated API Request Failure' or event.summary matches part 'Request Response Time is High for prod'"
-      }
+# # EVENT ORCHESTRATION ROUTER
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/event_orchestration_router
+# resource "pagerduty_event_orchestration_router" "health_check" {
+#   event_orchestration = pagerduty_event_orchestration.health_check.id
 
-      actions {
-        route_to = pagerduty_service.api.id
-      }
-    }
+#   set {
+#     id = "start"
 
-    rule {
-      label = "DB Failed Health Check--Route to DB Service"
+#     rule {
+#       label = "API Failed Health Check--Route to API Service"
 
-      condition {
-        expression = "event.summary matches part 'Error connecting to MySQL' or event.summary matches part 'mysql_long_running_query'"
-      }
+#       condition {
+#         expression = "event.summary matches part 'API Health Check violated API Request Failure' or event.summary matches part 'Request Response Time is High for prod'"
+#       }
 
-      actions {
-        route_to = pagerduty_service.db.id
-      }
-    }
-  }
+#       actions {
+#         route_to = pagerduty_service.api.id
+#       }
+#     }
 
-  catch_all {
-    actions {
-      route_to = pagerduty_service.unrouted.id
-    }
-  }
-}
+#     rule {
+#       label = "DB Failed Health Check--Route to DB Service"
 
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/event_orchestration_service
-resource "pagerduty_event_orchestration_service" "api" {
-  service = pagerduty_service.api.id
+#       condition {
+#         expression = "event.summary matches part 'Error connecting to MySQL' or event.summary matches part 'mysql_long_running_query'"
+#       }
 
-  set {
-    id = "start"
+#       actions {
+#         route_to = pagerduty_service.db.id
+#       }
+#     }
+#   }
 
-    rule {
-      label = "Suppress API Health Check Failure"
+#   catch_all {
+#     actions {
+#       route_to = pagerduty_service.unrouted.id
+#     }
+#   }
+# }
 
-      condition {
-        expression = "event.summary matches part 'API Health Check violated API Request Failure'"
-      }
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/event_orchestration_service
+# resource "pagerduty_event_orchestration_service" "api" {
+#   service = pagerduty_service.api.id
 
-      actions {
-        suspend = 600
-      }
-    }
+#   set {
+#     id = "start"
 
-    rule {
-      label = "Annotate API"
+#     rule {
+#       label = "Suppress API Health Check Failure"
 
-      condition {
-        expression = "event.summary matches part 'Request Response Time is High for prod'"
-      }
+#       condition {
+#         expression = "event.summary matches part 'API Health Check violated API Request Failure'"
+#       }
 
-      actions {
-        annotate = "This is a great note"
-      }
-    }
+#       actions {
+#         suspend = 600
+#       }
+#     }
 
-    rule {
-      label = "Slow DB Query Sev to Info"
+#     rule {
+#       label = "Annotate API"
 
-      condition {
-        expression = "event.summary matches part 'mysql_long_running_query'"
-      }
+#       condition {
+#         expression = "event.summary matches part 'Request Response Time is High for prod'"
+#       }
 
-      actions {
-        severity = "info"
-      }
-    }
-  }
+#       actions {
+#         annotate = "This is a great note"
+#       }
+#     }
 
-  catch_all {
-    actions {
+#     rule {
+#       label = "Slow DB Query Sev to Info"
 
-    }
-  }
-}
+#       condition {
+#         expression = "event.summary matches part 'mysql_long_running_query'"
+#       }
+
+#       actions {
+#         severity = "info"
+#       }
+#     }
+#   }
+
+#   catch_all {
+#     actions {
+
+#     }
+#   }
+# }
