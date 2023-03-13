@@ -1,7 +1,13 @@
+# User Modules to make USERS
+
+module "user1" {
+  source = "modules/users"
+  email = "bart@foo.test"
+  name = "Bart Simpson"
+  job_title = "Rascal"
+}
 
 
-# USERS
-# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user
 resource "pagerduty_user" "bart" {
   email       = "bart@foo.test"
   name        = "Bart Simpson"

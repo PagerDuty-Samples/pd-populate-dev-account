@@ -1,6 +1,6 @@
 #
 data "local_file" "input" {
-  filename = ".creds"
+  filename = ".creds" #can be anyfile with your api key in it (don't forget to add it to the .gitignore though)
 }
 
 # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs

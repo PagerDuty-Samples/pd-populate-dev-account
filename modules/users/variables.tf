@@ -15,11 +15,6 @@ variable "role" {
   default = "limited_user"
 }
 
-variable "role" {
-  type        = string
-  description = "PagerDuty Users Role"
-  default = "limited_user"
-}
 
 variable "job_title" {
   type        = string
