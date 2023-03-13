@@ -24,7 +24,7 @@
 #   }
 # }
 
-resource "pagerduty_schedule" "checkout_service" {
+resource "pagerduty_schedule" "generic_schedule" {
   name      = var.name
   time_zone = var.time_zone
 
