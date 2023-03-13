@@ -1,9 +1,6 @@
 ## PagerDuty User
-This opionated module is used for building a user, it makes sure that a timezone is set to GMT if appropriate, and 
+This opionated module is used for building a pagerduty schedule
 
-Specifically, it:
-
-* Creates a user based on data passed
 
 ### Providers
 

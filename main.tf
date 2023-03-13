@@ -5,65 +5,88 @@ module "user1" {
   email = "bart@foo.test"
   name = "Bart Simpson"
   job_title = "Rascal"
+}
 
+module "user2" {
+  source = "./modules/users"
+  email = "lisa@foo.test"
+  name = "Lisa Simpson"
+  job_title = "Supreme Thinker"
+  role = "user"
+  time_zone = "America/Denver"
+}
+
+# TEAMS
+# there is no need to write a abstraction for teams they are very very simple
+# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team
+resource "pagerduty_team" "simpson" {
+  name        = "Simpson"
+  description = "Team of Simpsons"
+}
+
+# TEAM MEMBERSHIP
+# there is no need to write a abstraction for team membership they are also very simple
+# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
+resource "pagerduty_team_membership" "lisa" {
+  user_id = module.user2.pager_duty_id
+  team_id = pagerduty_team.simpson.id
+  role    = "manager"
+}
+resource "pagerduty_team_membership" "bart" {
+  user_id = module.user1.pager_duty_id
+  team_id = pagerduty_team.simpson.id
+  role    = "responder"
 }
 
 
-# resource "pagerduty_user" "bart" {
-#   email       = "bart@foo.test"
-#   name        = "Bart Simpson"
-#   role        = "limited_user"
-#   description = "Spikey-haired boy"
-#   job_title   = "Rascal"
+module "schedule1" {
+  source = "./modules/schedules"
+  name = "Checkout Service Schedule"
+  time_zone = "America/Los_Angeles"
+  layers = {
+    name                         = "Night Shift"
+    start                        = "2022-10-27T20:00:00-08:00"
+    rotation_virtual_start       = "2022-10-27T17:00:00-08:00"
+    rotation_turn_length_seconds = 86400
+    users = [module.user1.pager_duty_id, module.user2.pager_duty_id],
+    teams = [pagerduty_team.simpson.id]
+     restriction = {
+      type              = "daily_restriction"
+      start_time_of_day = "07:00:00"
+      duration_seconds  = 54000
+    }
+  }
+}
+
+
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
+# resource "pagerduty_service" "api" {
+#   name              = "Checkout API"
+#   escalation_policy = pagerduty_escalation_policy.checkout_service.id
+#   alert_creation    = "create_alerts_and_incidents"
 # }
 
-# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user
-# resource "pagerduty_user" "lisa" {
-#   email       = "lisa@foo.test"
-#   name        = "Lisa Simpson"
-#   role        = "admin"
-#   description = "The brains"
-#   job_title   = "Supreme Thinker"
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
+# resource "pagerduty_service" "db" {
+#   name              = "Checkout DB"
+#   escalation_policy = pagerduty_escalation_policy.checkout_service.id
+#   alert_creation    = "create_alerts_and_incidents"
 # }
 
-# # TEAMS
-# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team
-# resource "pagerduty_team" "simpson" {
-#   name        = "Simpson"
-#   description = "Team of Simpsons"
-# }
+# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
+# resource "pagerduty_service" "unrouted" {
+#   name              = "Checkout Unrouted"
+#   escalation_policy = pagerduty_escalation_policy.checkout_service.id
+#   alert_creation    = "create_alerts_and_incidents"
 
-
-# # TEAM MEMBERSHIP
-# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
-# resource "pagerduty_team_membership" "lisa" {
-#   user_id = pagerduty_user.lisa.id
-#   team_id = pagerduty_team.simpson.id
-#   role    = "manager"
-# }
-
-# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
-# resource "pagerduty_team_membership" "bart" {
-#   user_id = pagerduty_user.bart.id
-#   team_id = pagerduty_team.simpson.id
-#   role    = "responder"
-# }
-
-
-# # escalation policy
-# # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/escalation_policy
-# resource "pagerduty_escalation_policy" "checkout_service" {
-#   name      = "Checkout Service Escalation Policy"
-#   num_loops = 3
-
-#   rule {
-#     escalation_delay_in_minutes = 30
-#     target {
-#       type = "schedule_reference"
-#       id   = pagerduty_schedule.checkout_service.id
-#     }
+#   auto_pause_notifications_parameters {
+#     enabled = true
+#     timeout = 900
 #   }
 # }
+
+
+
 
 # # SCHEDULE
 # # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/schedule
@@ -89,6 +112,26 @@ module "user1" {
 #     }
 #   }
 # }
+
+
+
+
+
+# SERVICES
+# escalation policy
+# see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/escalation_policy
+
+
+
+# resource "pagerduty_escalation_policy" "checkout_service" {
+#   name      = "Checkout Service Escalation Policy"
+#   num_loops = 3
+
+#   rule {
+#     escalation_delay_in_minutes = 30
+#     target {
+#       type = "schedule_reference"
+#       id   = pagerduty_schedule.
 
 # # SERVICES
 # # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service
