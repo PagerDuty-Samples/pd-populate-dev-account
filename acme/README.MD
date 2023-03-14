@@ -12,8 +12,8 @@ They are deploying PagerDuty for two main teams right now:
 - IT type people
   - 16 FTE's
   - For the most part everyone on the IT team is interchangeable with the exception of Fred, Paula
-  - Fred has been there forever and is an expert in everything and needs to be a catch all on all on call policies, but he isn’t on call normally
-  - Paula needs to be on both the Core Services and CRM
+  - Fred Flores has been there forever and is an expert in everything and needs to be a catch all on all on call policies, but he isn’t on call normally
+  - Paula Petunia needs to be on both the Core Services and CRM
 
 
 There is a need for a few other people that want to know about how IT is going, This includes the CEO, the sales manager, and the manufacturing foreman.
@@ -63,13 +63,8 @@ EOs between services with the same incoming data source
 
 
 
-## How to Use
-- Sign up for a [Developer Account](https://developer.pagerduty.com/sign-up/). This account will provide you with a sandbox that will allow you to build and modify things in a PagerDuty account without messing with production data.
-- [Generate a PagerDuty REST API key](https://support.pagerduty.com/docs/generating-api-keys).
-- Using that key, create a .creds file and place your API key in it, this will be ignored by git and is a best practice to not accidentally commit your credentials to git. 
-  - in reality you want to use some type of secrets manager and use a session variable to store your API credentials as they are the `keys to your PagerDuty kingdom`.  but for the purposes of getting you up and running the .creds file is ok for now
-  - Talk to your security department and use common sense in storing critical data
-- In the root directory, run a `terraform init` in the command line.
+## using this example
+- In this directory, run a `terraform init` in the command line.
 - Run `terraform plan` to see what changes this file will implement.
 - If everything looks good in your plan, run `terraform apply`. This will show you the plan again and then ask you to confirm whether you want to perform the proposed actions. Type `yes`.
 
