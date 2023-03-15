@@ -268,3 +268,21 @@ resource "pagerduty_team_membership" "team_mainframe_it_user16" {
   team_id = pagerduty_team.it_mainframe.id
   role    = "manager"
 }
+
+resource "pagerduty_user" "business_ceo" {
+  email       = "jvj@acme.test"
+  name        = "JonClaud Von Johnson"
+  role        = "read_only_user"
+}
+
+resource "pagerduty_user" "business_salesManager" {
+  email       = "astien@acme.test"
+  name        = "A. Stinebeck"
+  role        = "read_only_user"
+}
+
+resource "pagerduty_user" "business_foreman" {
+  email       = "goosebumps@acme.test"
+  name        = "RL Stien"
+  role        = "read_only_user"
+}
