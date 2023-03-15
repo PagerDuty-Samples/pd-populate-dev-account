@@ -4,16 +4,16 @@ At Acme Inc, our mission is to provide high-quality widgets that meet the needs 
 
 ## Acme People
 They are deploying PagerDuty for two main teams right now:
-- Customer facing helpdesk
-  - Team 1 - 6 people
-  - Team 2 - 6 people
-  - For the most part everyone on the helpdesk team is interchangeable with the exception Horatio
-    - Horatio needs to be on both the legacy mainframe on-call and on helpdesk team 1, he is getting trained up on the mainframe but isn’t ready to move over to the IT team full time
+- Customer facing Helpdesk
+  - Team 1 - 3 people
+  - Team 2 - 3 people
+  - For the most part everyone on the helpdesk team is interchangeable with the exception Horatio on team B
+    - Horatio (helpdesk_user06) needs to be on both the legacy mainframe on-call and on helpdesk team 1, he is getting trained up on the mainframe but isn’t ready to move over to the IT team full timem but he is on-call for it.
 - IT type people
   - 16 FTE's
   - For the most part everyone on the IT team is interchangeable with the exception of Fred, Paula
-  - Fred Flores has been there forever and is an expert in everything and needs to be a catch all on all on call policies, but he isn’t on call normally
-  - Paula Petunia needs to be on both the Core Services and CRM
+  - Fred Flores (ituser_16) has been there forever and is an expert in everything and needs to be a catch all on all on call policies, but he isn’t on call normally
+  - Paula Petunia (ituser_15) needs to be on both the Core Services and CRM
 
 
 There is a need for a few other people that want to know about how IT is going, This includes the CEO, the sales manager, and the manufacturing foreman.
@@ -26,8 +26,8 @@ There is a need for a few other people that want to know about how IT is going, 
 
 ### Helpdesk
 Follow the sun model split on two teams, each with 12-hour shifts.
-- Each team is made up of 6 people
-- The rotation is a week for both teams.
+- Each team is made up of 4 people
+- The rotation is daily for both teams
 ### The IT team
 24x7 schedule with a weekly shift. And they support 4 major business areas: there is a bit of overlap as Acme Inc allows its employees to move between focus areas as needed.
 
