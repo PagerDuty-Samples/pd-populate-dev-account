@@ -142,7 +142,7 @@ resource "pagerduty_team_membership" "team_web_it_user06" {
   role    = "responder"
 }
 resource "pagerduty_user" "it_user07" {
-  email       = "davidM@acme.test"
+  email       = "daveM@acme.test"
   name        = "David L. Moore"
   role        = "limited_user"
 }
