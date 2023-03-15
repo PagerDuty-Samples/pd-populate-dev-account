@@ -26,20 +26,22 @@ There is a need for a few other people that want to know about how IT is going, 
 
 ### Helpdesk
 Follow the sun model split on two teams, each with 12-hour shifts.
-- Each team is made up of 4 people
+- Each team is made up of 3 people
 - The rotation is daily for both teams
+  - Fred is an escalation point for both teams, and he only has 1 min to respond if paged
 ### The IT team
-24x7 schedule with a weekly shift. And they support 4 major business areas: there is a bit of overlap as Acme Inc allows its employees to move between focus areas as needed.
+- 24x7 schedule with a weekly shift. And they support 4 major business areas: there is a bit of overlap as Acme Inc allows its employees to move between focus areas as needed.
+- Fred is an escalation point for all teams, and he only has 10 min to respond if paged, except for core it services where he as 60 min
 
 
 ## Services
-- There is a NOC team of 6 people inside of the IT team; they respond to blinkenlights and can escalate to other IT teams (via Incident workflows?)
+- The helpdesk teams also act as a NOC team for the IT team; they respond to blinkenlights and can escalate to other IT teams (via Incident workflows?)
 
 The IT team supports 4 major business services
 - Core Services (active directory, DNS, DHCP, network etc)
   - They run VMware as a hypervisor and a few database servers to support the CRM software
 - Web application
-  - A very basic hosted ecommerce site
+  - A very basic hosted e-commerce site
 - CRM Software
   - This is a business critical system used to send and process orders
 - Legacy Mainframe
