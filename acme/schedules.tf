@@ -57,12 +57,14 @@ resource "pagerduty_schedule" "it_crm" {
     name                         = "Weekly On-call"
     start                        = "2015-11-06T20:00:00-05:00" #starts at 8pm
     rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
-    rotation_turn_length_seconds = 86400
+    rotation_turn_length_seconds = 604800
     users                        = local.IT_crm #this is the locally defined rotation of users defiened at the top of this file
   }
 
   teams = [pagerduty_team.it_crm.id] #this is the team ID
 }
+
+
 
 resource "pagerduty_schedule" "it_web" {
   name      = "IT web"
@@ -72,7 +74,7 @@ resource "pagerduty_schedule" "it_web" {
     name                         = "Weekly On-call"
     start                        = "2015-11-06T20:00:00-05:00" #starts at 8pm
     rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
-    rotation_turn_length_seconds = 86400
+    rotation_turn_length_seconds = 604800
     users                        = local.IT_web #this is the locally defined rotation of users defiened at the top of this file
   }
 
@@ -80,32 +82,46 @@ resource "pagerduty_schedule" "it_web" {
 }
 
 resource "pagerduty_schedule" "it_mainframe" {
-  name      = "IT web"
+  name      = "IT mainframe"
   time_zone = "America/New_York"
 
   layer {
     name                         = "Weekly On-call"
     start                        = "2015-11-06T20:00:00-05:00" #starts at 8pm
     rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
-    rotation_turn_length_seconds = 86400
+    rotation_turn_length_seconds = 604800
     users                        = local.IT_mainframe #this is the locally defined rotation of users defiened at the top of this file
   }
 
-  teams = [pagerduty_team.it_web.id] #this is the team ID
+  teams = [pagerduty_team.it_mainframe.id] #this is the team ID
 }
 
-
 resource "pagerduty_schedule" "it_core" {
-  name      = "IT web"
+  name      = "IT Core"
   time_zone = "America/New_York"
 
   layer {
     name                         = "Weekly On-call"
     start                        = "2015-11-06T20:00:00-05:00" #starts at 8pm
     rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
-    rotation_turn_length_seconds = 86400
+    rotation_turn_length_seconds = 604800
     users                        = local.IT_core #this is the locally defined rotation of users defiened at the top of this file
   }
 
   teams = [pagerduty_team.it_core.id] #this is the team ID
+}
+
+resource "pagerduty_schedule" "sucks_to_be_fred" {
+  name      = "Fred is Always on Call"
+  time_zone = "America/New_York"
+
+  layer {
+    name                         = "Weekly On-call"
+    start                        = "2015-11-06T20:00:00-05:00" #starts at 8pm
+    rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
+    rotation_turn_length_seconds = 604800
+    users                        = [pagerduty_user.it_user16.id] #we are setting the explict user in the list/array
+  }
+
+
 }
