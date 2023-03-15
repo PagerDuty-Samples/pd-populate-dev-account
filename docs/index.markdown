@@ -10,5 +10,5 @@ Welcome to the PagerDuty Terraform example account resource repository. In this 
 
 There are two ways to use this project:
 * I know what I'm looking for, take me to the Terraform!
-* I'm not sure what I need, take me to the [story](/acme).
-* Show me how to translate the story into [PagerDuty resources](/resources).
+* I'm not sure what I need, take me to the [story](acme).
+* Show me how to translate the story into [PagerDuty resources](resources).
