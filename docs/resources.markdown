@@ -3,6 +3,7 @@ layout: page
 title: PagerDuty Resources For ACME
 permalink: /resources/
 ---
+<link rel="shortcut icon" type="image/png" href="favicon.png">
 
 To make effective use of their PagerDuty account, ACME has built out a number of resources that represent their real-world organization and ecosystem.
 
@@ -140,7 +141,76 @@ When a schedule is created in PagerDuty, the users are included individually. Us
 ### Why Are Team Members Added Directly?
 When a new user is added to a PagerDuty team, they might not be ready for on call duties! New users can still see services, incidents, and other PagerDuty objects in the account once their `user` is added, but to be on call, they'll need to be included explicitly!
 
+## Other Schedules
+There are some use cases where a single user is on call continuously. Hopefully, these are for low-priority incidents! Often a single user schedule is helpful for specific types of escalations or specialty services that require restricted access, specific knowledge, or other limited resources.
+
+Fred Flores is the glue that holds much of ACME's IT Operations together. He's been with the company for decades, and built many of the original services. Since Fred is knowledgeable about many services, he's not normally on call for any of the IT sub-teams, but he has his own dedicated schedule just in case he's needed for esoteric incidents, escalations, or emergencies.
+```
+resource "pagerduty_schedule" "sucks_to_be_fred" {
+  name      = "Fred is Always on Call"
+  time_zone = "America/New_York"
+
+  layer {
+    name                         = "Weekly On-call"
+    start                        = "2015-11-06T20:00:00-05:00" # starts at 8pm
+    rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
+    rotation_turn_length_seconds = 604800
+    users                        = [pagerduty_user.it_user16.id] # we are setting the explict user in the list/array
+  }
+}
+```
+
+
 ## Escalation Policies
+
+In PagerDuty, [escalation policies] are how *schedules* get attached to *services*. You can build escalation policies with users or with schedules, but we recommend using schedules to keep updates more streamlined. New users are added to schedules and not to individual escalation policies.
+
+Each service in PagerDuty will have a one (and only one!) escalation policy attached to it, and multiple services can make use of the same escalation policy. So a team's escalation policy can be applied to all of the services a team owns. 
+
+Each escalation policy can be made up of different rules for who to contact when an incident is initiated. Each rule will specify how long PagerDuty should wait for an [acknowledgement] before checking the next rule for another round of notifications. 
+
+The ACME Help Desk has an escalation policy that will make use of both of the Help Desk on call schedules. The first round of notifications will go to whichever Help Desk engineer is on call. Because the schedules have different hours, PagerDuty will only notify one engineer. If the Help Desk doesn't respond, Fred will be paged!
+
+Escalation policies are configured in Terraform using the `pagerduty_escalation_policy` [resource].
+
+```
+resource "pagerduty_escalation_policy" "helpdesk" {
+  name      = "Page the Helpdesk"
+  num_loops = 1
+
+  rule {
+    escalation_delay_in_minutes = 30
+    target {
+      type = "schedule_reference"
+      id   = pagerduty_schedule.HelpDesk_Day_Shift.id
+    }
+    target {
+      type = "schedule_reference"
+      id   = pagerduty_schedule.HelpDesk_Night_Shift.id
+    }
+  }
+  #if the helpdesk doesn't answer fred gets paged
+  rule {
+    escalation_delay_in_minutes = 1 #fred doesn't get very long to respond, fred is a machine
+    target {
+      type = "schedule_reference"
+      id   = pagerduty_schedule.sucks_to_be_fred.id #it really sucks to be fred
+    }
+  }
+}
+```
+
+Escalation policies can have up to 20 rules for how to notify responders. Each rule has its own `rule` section, made up of one or more `target`s. Targets can be individual users, a selection of several users, a single schedule, or multiple schedules. The entire ruleset can also be looped through 9 times. This is configured with `num_loops`. Once all the notifications are exhausted, the incident will stay assigned to the last notified responder. Between each set of rules is a delay, set with `escalation_delay_in_minutes` which tells PagerDuty how long to wait for a responder to *acknowledge* an incident before trying a responder in the next *rule*. 
+
+**The escalation policy only proceeds through the rules until the incident is acknowledged.** 
+
+### What happens if no one is on call?
+The application of schedules and escalation policies can be complex. You'll want to make sure that your services are covered during the hours you intend them to be covered! If an incident occurs while no one is assigned on call for the service, **no notifications will go out** by default. The incidents will be created, but no one on your team will be notfied about them.
+
+This behavior can be changed on a service-by-service basis. It is part of the service configuration itself, and separate from the escalation policy settings. Services can be configured with [defined support hours](https://support.pagerduty.com/docs/dynamic-notifications#defined-support-hours) that will notify responders during support hours and can be set to notify on incidents that come in on off hours when the support hours start again. 
+
+### Other Cases - Round Robin
+Another common pattern for Help Desk and NOC-type teams is to make use of [round robin scheduling](https://support.pagerduty.com/docs/round-robin-scheduling). This will change the behavior of the escalation policy rule by assigning incidents to each of the members of a schedule in turn. Unfortunately, this feature is not enabled via the API and is currently unavailable via Terraform. 
 
 ## Services
 
