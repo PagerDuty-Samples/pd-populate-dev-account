@@ -3,7 +3,7 @@ layout: page
 title: PagerDuty Resources For ACME
 permalink: /resources/
 ---
-<link rel="shortcut icon" type="image/png" href="favicon.png">
+
 
 To make effective use of their PagerDuty account, ACME has built out a number of resources that represent their real-world organization and ecosystem.
 
