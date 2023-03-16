@@ -18,7 +18,7 @@ resource "pagerduty_service" "service_mainframe" {
   name                    = "Mainframe"
   auto_resolve_timeout    = 14400
   acknowledgement_timeout = 600
-  escalation_policy       = pagerduty_escalation_policy.it_web.id
+  escalation_policy       = pagerduty_escalation_policy.it_mainframe.id
   alert_creation          = "create_alerts_and_incidents"
 }
 
