@@ -3,6 +3,7 @@
 
 # TEAM Assignments
 # TBH these are a bit painful as you need to do it 1:1
+# don't do them this way use a import or SSO provider if you can
 # see https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership
 resource "pagerduty_user" "helpdesk_user01" {
   email       = "idab@acme.test"
