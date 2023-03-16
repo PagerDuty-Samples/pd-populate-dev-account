@@ -31,6 +31,25 @@ resource "pagerduty_service" "service_core" {
 }
 
 
+## some services under IT core 
+
+resource "pagerduty_service" "service_dns" {
+  name                    = "Core DNS Services"
+  auto_resolve_timeout    = 14400
+  acknowledgement_timeout = 600
+  escalation_policy       = pagerduty_escalation_policy.it_core.id
+  alert_creation          = "create_alerts_and_incidents"
+}
+
+resource "pagerduty_service" "service_vmware" {
+  name                    = "Core VMware Services"
+  auto_resolve_timeout    = 14400
+  acknowledgement_timeout = 600
+  escalation_policy       = pagerduty_escalation_policy.it_core.id
+  alert_creation          = "create_alerts_and_incidents"
+}
+
+
 #how about some business services 
 
 resource "pagerduty_business_service" "IT" {
@@ -157,6 +176,34 @@ resource "pagerduty_service_dependency" "it_to_core" {
         dependent_service {
             id = pagerduty_business_service.IT.id
             type = pagerduty_business_service.IT.type
+        }
+        supporting_service {
+            id = pagerduty_service.service_core.id
+            type = pagerduty_service.service_core.type
+        }
+    }
+}
+
+#technical Service Interconnections 
+
+resource "pagerduty_service_dependency" "dns_to_it" {
+    dependency {
+        dependent_service {
+            id = pagerduty_service.service_dns.id
+            type = pagerduty_service.service_dns.type
+        }
+        supporting_service {
+            id = pagerduty_service.service_core.id
+            type = pagerduty_service.service_core.type
+        }
+    }
+}
+
+resource "pagerduty_service_dependency" "vmware_to_it" {
+    dependency {
+        dependent_service {
+            id = pagerduty_service.service_vmware.id
+            type = pagerduty_service.service_vmware.type
         }
         supporting_service {
             id = pagerduty_service.service_core.id
