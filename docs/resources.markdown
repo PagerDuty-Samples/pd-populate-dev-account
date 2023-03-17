@@ -5,15 +5,17 @@ permalink: /resources/
 ---
 
 
-To make effective use of their PagerDuty account, ACME has built out a number of resources that represent their real-world organization and ecosystem.
+To make effective use of their PagerDuty [account](https://www.pagerduty.com/sign-up/), ACME has built out a number of resources that represent their real-world organization and ecosystem.
 
 ## Users
 
-When ACME first opens their PagerDuty account, the first step is to add some users.
+When ACME first opens their PagerDuty account, the first step is to add some [users](https://support.pagerduty.com/docs/users).
 
 ACME will have several types of users who will need different abilities and permissions in the account.
 
-Most of the users will need to respond to incidents by [acknowledging] and [resolving] them. Some of the users will be stakeholders but not responders. The executive team won't be responsible for responding to the incidents that happen, but they want to be informed when incidents happen. ACME's Sales Manager, for example, wants to be updated for the ecommerce site - that impacts the Sales team's work - but isn't concerned about other issues that might be raised on the rest of ACME's web services.
+Most of the users will need to respond to [incidents](https://support.pagerduty.com/docs/incidents) by [acknowledging](https://support.pagerduty.com/docs/incidents#acknowledge-an-incident) and [resolving](https://support.pagerduty.com/docs/incidents#resolve-an-incident) them. Some of the users will be [stakeholders](https://support.pagerduty.com/docs/communicate-with-stakeholders) but not responders. The executive team won't be responsible for responding to the incidents that happen, but they want to be informed when incidents happen. ACME's Sales Manager, for example, wants to be updated for the ecommerce site - that impacts the Sales team's work - but isn't concerned about other issues that might be raised on the rest of ACME's web services.
+
+Users are represented in Terraform by they `pagerduty_user` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user). Each user at ACME is configured with their `name`, `email`, and `role` included in their configuration.
 
 ```
 resource "pagerduty_user" "helpdesk_user01" {
@@ -23,11 +25,9 @@ resource "pagerduty_user" "helpdesk_user01" {
 }
 ```
 
-Users are represented in Terraform by they `pagerduty_user` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user). Each user at ACME is configured with their `name`, `email`, and `role` included in their configuration. 
+This user, *Ida B. Butler* will be created in PagerDuty with the `limited_user` role. Ida will be a responder for her team, and will be able to view most of the objects in the PagerDuty account, as well as create overrides to the on call schedule; trigger, acknowledge, and resolve incidents; and add, edit, and delete postmortems.
 
-Our user, *Ida B. Butler* will be created in PagerDuty with the `limited_user` role. Ida will be a responder for her team.
-
-*** put pointer to the roles translation table thing here ***
+The types of [user roles](https://support.pagerduty.com/docs/user-roles) available will depend on the type of account a team has with PagerDuty. 
 
 ** maybe a note about SSO here **
 
@@ -278,20 +278,19 @@ To create the relationships among services in PagerDuty, the services are linked
 ACME is connecting a number of technical services to their business services for better visibility. For example, the *Sales* business service depends on the *CRM* service, and if there is an incident on *CRM*, everyone on the Sales team could be impacted:
 ```
 resource "pagerduty_service_dependency" "sales_to_crm" {
-    dependency {
-        dependent_service {
-            id = pagerduty_business_service.Sales.id
-            type = pagerduty_business_service.Sales.type
-        }
-        supporting_service {
-            id = pagerduty_service.service_CRM.id
-            type = pagerduty_service.service_CRM.type
-        }
+  dependency {
+    dependent_service {
+      id = pagerduty_business_service.Sales.id
+        type = pagerduty_business_service.Sales.type
+      }
+    supporting_service {
+      id = pagerduty_service.service_CRM.id
+        type = pagerduty_service.service_CRM.type
     }
+  }
 }
 ```
-
-
+When ACME's users view the service graph in the web UI, they'll be able to tell at a glance if there are incidents on any technical services impacting the business services. 
 
 ## Integrations
 
