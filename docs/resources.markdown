@@ -214,7 +214,7 @@ Another common pattern for Help Desk and NOC-type teams is to make use of [round
 
 ## Services
 
-*Services* are how PagerDuty represents pieces of work. Most of the services in a PagerDuty account will represent some kind of technical service - web applications, middleware, databases - but services can also represent [workflows](link to services post). A service can be anything that might need attention, and is wholly owned by a single team.
+*Services* are how PagerDuty represents pieces of work. Most of the [services] in a PagerDuty account will represent some kind of technical service - web applications, middleware, databases - but services can also represent [workflows](link to services post). A service can be anything that might need attention, and is wholly owned by a single team. These services are also sometimes referred to as *Technical Services* in the [documentation].
 
 Since ACME is looking to create specific processes for incident response around their technical services, those are what will be configured first. Each service is created with the `pagerduty_service` [resource]. A service has a unique `name` and an `escalation_policy` from the policies that were created earlier. There are a number of optional configurations as well. ACME will start out with some basic configurations to try out until they determine how well their new procedures are working. 
 
@@ -254,6 +254,44 @@ resource "pagerduty_service" "service_vmware" {
 }
 ```
 ### Business Services
+*Business Services* are a special type of service - they are configured in PagerDuty to be part of the service graph, but they are not able to receive alerts or send notifications. They are helpful when assessing the impact of an incident on users or customers, particularly if customers are contacting a support team to report that something isn't working. Users don't know that a database query is running too slowly, they only see that the "shopping cart page is slow" or "it's taking too long to log in". 
+
+As ACME builds their services in PagerDuty, they'll construct service graphs for related services and establish relationships between technical services and business services.  Business services are created using the `pagerduty_business_service` Terraform [resource]. They have fewer configuration options than regular technical services, and only `name` is required. ACME's business services will be configured with `name`, `description`, `point_of_contact` (for information purposes, not notifications), and `team` (for permissions, not notifications):
+```
+ resource "pagerduty_business_service" "IT" {
+  name             = "IT Services"
+  description      = "All IT services at ACME inc."
+  point_of_contact = pagerduty_team.helpdesk.name #ask the helpdesk for help with IT services
+  team             = pagerduty_team.IT.id
+}
+```
+ACME will start with three business services: *IT Services*, *Manufacturing*, and *Sales*. 
+
+
+### Service Graph
+In addition to simply creating services, ACME wants to make use of PagerDuty's [service graph](https://support.pagerduty.com/docs/service-graph). Service Graph allows PagerDuty users to create relationships among the various services in a PagerDuty account. Users with a service graph configuration can more easily determine the potential impact of an incident on a backend service by seeing what other services might be affected.
+
+The combination of business and technical services into a service graph will give ACME's executive team a visual representation of the health of their services at any given time, via the [status page].
+
+To create the relationships among services in PagerDuty, the services are linked via *dependencies*. These are configured via Terraform with the `pagerduty_service_dependency` [resource]. Each dependency resource must contain a `dependent_service` and a `supporting_service`. The *dependent service* is one that consumes or makes use of a *supporting service* in some way and could be impacted if the *supporting service* experiences an incident. 
+
+ACME is connecting a number of technical services to their business services for better visibility. For example, the *Sales* business service depends on the *CRM* service, and if there is an incident on *CRM*, everyone on the Sales team could be impacted:
+```
+resource "pagerduty_service_dependency" "sales_to_crm" {
+    dependency {
+        dependent_service {
+            id = pagerduty_business_service.Sales.id
+            type = pagerduty_business_service.Sales.type
+        }
+        supporting_service {
+            id = pagerduty_service.service_CRM.id
+            type = pagerduty_service.service_CRM.type
+        }
+    }
+}
+```
+
+
 
 ## Integrations
 
