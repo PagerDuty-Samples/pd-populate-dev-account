@@ -298,5 +298,30 @@ When ACME's users view the service graph in the web UI, they'll be able to tell 
 
 ## Integrations
 
-PagerDuty [*Integrations*](https://support.pagerduty.com/docs/services-and-integrations#add-integrations-to-an-existing-service) allow PagerDuty services to receive information from outside of PagerDuty. This information can be alerts from monitoring systems, build systems, physical hardware and facilities, or any number of other sources.  PagerDuty can receive alerts from over [700](https://pagerduty.com/integrations) sources using published integrations, and teams can create their own integrations if one isn't available for their system. 
+PagerDuty [*Integrations*](https://support.pagerduty.com/docs/services-and-integrations#add-integrations-to-an-existing-service) allow PagerDuty services to receive information from outside of PagerDuty. This information can be alerts from monitoring systems, build systems, physical hardware and facilities, or any number of other sources.  PagerDuty can receive alerts from over [700](https://pagerduty.com/integrations) sources using published integrations, and teams can create their own integrations if one isn't available for their system. The incoming data can be sent via HTTPS or even via email!
 
+ACME's mainframe system is able to send email when it encounters a problem. This is problematic for the IT Operations team, since no one wants to have to monitor their email constantly. Fortunately, the mainframe can be configured to send its error messages to a PagerDuty [integration via email](https://support.pagerduty.com/docs/email-integration-guide).  These alerts will be ingested by PagerDuty and routed to the *Mainframe* service so the correct team can be notified of a problem.
+
+Service integrations are configured using the `pagerduty_service_integration` Terraform [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_integration). Once the integration is created, a new email address will be configured in the mainframe's alerting setup, and new alerts will be sent to PagerDuty. 
+
+The configuration requires a few pieces. The integration must have a `name`, `type` set to "generic_email_inbound_integration", `integration_email` that includes the full PagerDuty account subdomain, and `service` that will receive the alerts:
+```
+resource "pagerduty_service_integration" "mainframe_email" {
+    name              = "MainFrame Email"
+    type              = "generic_email_inbound_integration"
+    integration_email = "mainframe@pdt-toddfather.pagerduty.com" #integration_email should end with account domain
+    service           = pagerduty_service.service_mainframe.id
+    email_incident_creation = "use_rules"
+    email_filter_mode       = "and-rules-email"
+    email_filter {
+        body_mode        = "always"
+        body_regex       = null
+        subject_mode     = "match"
+        subject_regex    = "(CRITICAL*)"
+    }
+}
+```
+This configuration also has option `email_filter` [rules](https://support.pagerduty.com/docs/email-management-filters-and-rules#configure-a-regex-filter) that will help ACME manage the messages sent by the mainframe.
+
+## Other Components
+In the future, ACME may want to expand the capabilities of their PagerDuty account by adding integrations for their chat software, building some [incident workflows](https://support.pagerduty.com/docs/incident-workflows) or [event orchestrations](https://support.pagerduty.com/docs/event-orchestration), and trying out some [automation actions](https://support.pagerduty.com/docs/automation-actions). 
