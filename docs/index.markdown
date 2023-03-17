@@ -4,6 +4,7 @@
 layout: home
 title: Home
 permalink: /
+nav_order: 1
 ---
 
 Welcome to the PagerDuty Terraform example account resource repository. In this project, you will find resources for building out PagerDuty configurations using Terraform.

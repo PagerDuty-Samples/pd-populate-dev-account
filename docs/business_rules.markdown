@@ -2,13 +2,14 @@
 layout: page
 title: Business Rules For ACME
 permalink: /business_resources/
+nav_order: 4
 ---
 
 
 To make effective use of their PagerDuty account, ACME has built out some of their core business rules and used PagerDuty to help enforce them
 
 ## Using Priorities
-In order to effectily use business services and make sure that the right people are aware of issues. The Acme team has enabled and uses priorities in their account.
+In order to effectively use business services and make sure that the right people are aware of issues. The Acme team has enabled and uses priorities in their account.
 
 They have also spent time with their help desk and IT staff to make sure that there is a clear understanding of what a P1 -> P5. This information was setup shortly after their account was created and can't be managed by terraform.
 
