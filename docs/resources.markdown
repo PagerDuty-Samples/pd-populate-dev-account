@@ -1,6 +1,6 @@
 ---
 layout: page
-title: PagerDuty Resources
+title: PagerDuty For ACME's Business
 permalink: /resources/
 nav_order: 3
 ---
@@ -167,15 +167,15 @@ It's possible to configure PagerDuty on call schedules in a variety of ways to m
 
 ## Escalation Policies
 
-In PagerDuty, [escalation policies] are how *schedules* get attached to *services*. You can build escalation policies with users or with schedules, but we recommend using schedules to keep updates more streamlined. New users are added to schedules and not to individual escalation policies.
+In PagerDuty, [escalation policies](https://support.pagerduty.com/docs/escalation-policies) are how *schedules* get attached to *services*. You can build escalation policies with users or with schedules, but we recommend using schedules to keep updates more streamlined. New users are added to schedules and not to individual escalation policies.
 
 Each service in PagerDuty will have a one (and only one!) escalation policy attached to it, and multiple services can make use of the same escalation policy. So a team's escalation policy can be applied to all of the services a team owns. 
 
-Each escalation policy can be made up of different rules for who to contact when an incident is initiated. Each rule will specify how long PagerDuty should wait for an [acknowledgement] before checking the next rule for another round of notifications. 
+Each escalation policy can be made up of different rules for who to contact when an incident is initiated. Each rule will specify how long PagerDuty should wait for an [acknowledgement](https://support.pagerduty.com/docs/incidents#acknowledge-an-incident) before checking the next rule for another round of notifications. 
 
 The ACME Help Desk has an escalation policy that will make use of both of the Help Desk on call schedules. The first round of notifications will go to whichever Help Desk engineer is on call. Because the schedules have different hours, PagerDuty will only notify one engineer. If the Help Desk doesn't respond, Fred will be paged!
 
-Escalation policies are configured in Terraform using the `pagerduty_escalation_policy` [resource].
+Escalation policies are configured in Terraform using the `pagerduty_escalation_policy` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/escalation_policy).
 
 ```
 resource "pagerduty_escalation_policy" "helpdesk" {
@@ -206,7 +206,7 @@ resource "pagerduty_escalation_policy" "helpdesk" {
 
 Escalation policies can have up to 20 rules for how to notify responders. Each rule has its own `rule` section, made up of one or more `target`s. Targets can be individual users, a selection of several users, a single schedule, or multiple schedules. The entire ruleset can also be looped through 9 times. This is configured with `num_loops`. Once all the notifications are exhausted, the incident will stay assigned to the last notified responder. Between each set of rules is a delay, set with `escalation_delay_in_minutes` which tells PagerDuty how long to wait for a responder to *acknowledge* an incident before trying a responder in the next *rule*. 
 
-**The escalation policy only proceeds through the rules until the incident is acknowledged.** 
+**The escalation policy only proceeds through the rules until the incident is acknowledged.** Once an incident is acknowledged by a responder, the PagerDuty stops notifying the team unless there is a timeout configured.
 
 ### What happens if no one is on call?
 The application of schedules and escalation policies can be complex. You'll want to make sure that your services are covered during the hours you intend them to be covered! If an incident occurs while no one is assigned on call for the service, **no notifications will go out** by default. The incidents will be created, but no one on your team will be notfied about them.
@@ -218,9 +218,9 @@ Another common pattern for Help Desk and NOC-type teams is to make use of [round
 
 ## Services
 
-*Services* are how PagerDuty represents pieces of work. Most of the [services] in a PagerDuty account will represent some kind of technical service - web applications, middleware, databases - but services can also represent [workflows](link to services post). A service can be anything that might need attention, and is wholly owned by a single team. These services are also sometimes referred to as *Technical Services* in the [documentation].
+*Services* are how PagerDuty represents pieces of work. Most of the [services](https://support.pagerduty.com/docs/services-and-integrations) in a PagerDuty account will represent some kind of technical service - web applications, middleware, databases - but services can also represent [workflows](https://community.ops.io/pdcommunity/when-can-a-service-not-be-a-service-using-pagerduty-in-different-contexts-211). A service can be anything that might need attention, and is wholly owned by a single team. These services are also sometimes referred to as *Technical Services* in the [documentation](https://support.pagerduty.com/docs/services-and-integrations).
 
-Since ACME is looking to create specific processes for incident response around their technical services, those are what will be configured first. Each service is created with the `pagerduty_service` [resource]. A service has a unique `name` and an `escalation_policy` from the policies that were created earlier. There are a number of optional configurations as well. ACME will start out with some basic configurations to try out until they determine how well their new procedures are working. 
+Since ACME is looking to create specific processes for incident response around their technical services, those are what will be configured first. Each service is created with the `pagerduty_service` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service). A service has a unique `name` and an `escalation_policy` from the policies that were created earlier. There are a number of optional configurations as well. ACME will start out with some basic configurations to try out until they determine how well their new procedures are working. 
 
 The two options they've decided on are `auto_resolve_timeout` and `acknowledgement_timeout`:
 - `auto_resolve_timeout` will automatically resolve incidents if they are left idle for more than 4 hours. **Is this a good thing to be setting in an example?**
