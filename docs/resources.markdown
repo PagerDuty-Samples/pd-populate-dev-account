@@ -1,13 +1,13 @@
 ---
 layout: page
-title: PagerDuty Business
-permalink: /business_services/
+title: PagerDuty Resources for ACME
+permalink: /resources/
 ---
 
 
-To make effective use of their PagerDuty account, ACME has built a few 
+To make effective use of their PagerDuty account, ACME has built out a number of resources that represent their real-world organization and ecosystem.
 
-## Business Services
+## Users
 
 When ACME first opens their PagerDuty account, the first step is to add some users.
 
