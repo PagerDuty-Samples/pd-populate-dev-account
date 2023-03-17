@@ -2,9 +2,6 @@
 layout: page
 title: PagerDuty Resources
 permalink: /resources/
-
-title: PagerDuty Business
-permalink: /business_services/
 nav_order: 3
 ---
 
