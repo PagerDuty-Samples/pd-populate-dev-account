@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Business Rules For ACME
-permalink: /resources/
+permalink: /business_resources/
 ---
 
 
@@ -43,9 +43,3 @@ resource "pagerduty_business_service_subscriber" "helpdesk_example_b" {
   business_service_id = pagerduty_business_service.IT.id
 }
 ```
-
-Users are represented in Terraform by they `pagerduty_user` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/user). Each user at ACME is configured with their `name`, `email`, and `role` included in their configuration. 
-
-Our user, *Ida B. Butler* will be created in PagerDuty with the `limited_user` role. Ida will be a responder for her team.
-
-## Teams who Know

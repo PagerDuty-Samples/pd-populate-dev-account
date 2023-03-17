@@ -1,6 +1,6 @@
 ---
 layout: page
-title: PagerDuty Business Services For ACME
+title: PagerDuty Business
 permalink: /business_services/
 ---
 
