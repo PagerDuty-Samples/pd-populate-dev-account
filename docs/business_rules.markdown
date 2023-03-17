@@ -2,7 +2,7 @@
 layout: page
 title: Business Rules For ACME
 permalink: /business_resources/
-nav_order: 4
+navigation_weight: 4
 ---
 
 
