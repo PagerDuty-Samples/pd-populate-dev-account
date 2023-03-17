@@ -6,12 +6,9 @@ nav_order: 4
 ---
 
 
-To make effective use of their PagerDuty account, ACME has built out some of their core business rules and used PagerDuty to help enforce them
+To make effective use of their PagerDuty account, ACME has built out some of their core business rules and used PagerDuty to help enforce them. In order to effectively use business services and make sure that the right people are aware of issues. The Acme team has enabled and uses priorities in their account.
 
-## Using Priorities
-In order to effectively use business services and make sure that the right people are aware of issues. The Acme team has enabled and uses priorities in their account.
-
-They have also spent time with their help desk and IT staff to make sure that there is a clear understanding of what a P1 -> P5. This information was setup shortly after their account was created and can't be managed by terraform.
+They have also spent time with their help desk and IT staff to make sure that there is a clear understanding of what a P1 -> P5 is. This information was setup shortly after their account was created and can't be managed by terraform.
 
 This setup can be referenced though a Terraform data resource so that certain events can automatically trigger high priority incidents if necessary.
 
@@ -44,3 +41,4 @@ resource "pagerduty_business_service_subscriber" "helpdesk_example_b" {
   business_service_id = pagerduty_business_service.IT.id
 }
 ```
+
