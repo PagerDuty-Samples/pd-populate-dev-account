@@ -143,19 +143,6 @@ resource "pagerduty_service_dependency" "sales_to_crm" {
     }
 }
 
-# resource "pagerduty_service_dependency" "sales_to_website" {
-#     dependency {
-#         dependent_service {
-#             id = pagerduty_business_service.Sales.id
-#             type = pagerduty_business_service.Sales.type
-#         }
-#         supporting_service {
-#             id = pagerduty_service.service_web.id
-#             type = pagerduty_service.service_web.type
-#         }
-#     }
-# }
-
 #IT relies on all 4 services
 
 resource "pagerduty_service_dependency" "it_to_crm" {
