@@ -1,6 +1,6 @@
 ---
 layout: page
-title: PagerDuty Resources for ACME
+title: PagerDuty Resources
 permalink: /resources/
 ---
 
