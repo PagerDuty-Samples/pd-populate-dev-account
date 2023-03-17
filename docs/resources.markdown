@@ -29,13 +29,14 @@ This user, *Ida B. Butler* will be created in PagerDuty with the `limited_user` 
 
 The types of [user roles](https://support.pagerduty.com/docs/user-roles) available will depend on the type of account a team has with PagerDuty. 
 
-** maybe a note about SSO here **
+### Does PagerDuty Support SSO?
+Yes! Some account types do support [Single Sign-On](https://support.pagerduty.com/docs/sso) (SSO). Only the account owner of the PagerDuty account can make this configuration change. 
 
 ## Teams
 
-Once a user is created in PagerDuty, they should be assigned to a [team]. Teams convey permissions and ownership of various components in PagerDuty.
+Once a user is created in PagerDuty, they should be assigned to a [team](https://support.pagerduty.com/docs/teams). Teams convey permissions and ownership of various components in PagerDuty.
 
-A PagerDuty team will have ownership of services, workflows, and other objects. Team membership also makes creating and using Schedules easier. Teams are created with the `pagerduty_team` [resource].  **NEED TO FIND THE DOCS ON TEAM HIERARCHY**
+A PagerDuty team will have ownership of services, workflows, and other objects. Team membership also makes creating and using Schedules easier. Teams are created with the `pagerduty_team` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team).  
 
 ```
 resource "pagerduty_team" "helpdesk" {
@@ -50,9 +51,9 @@ resource "pagerduty_team" "helpdesk_team_a" {
 }
 ```
 
-ACME will have several teams, representing the Helpdesk and the IT Operations teams. Users can have various roles as members of teams, and may be [managers] or [responders] depending on what they will be required to do in PagerDuty. 
+ACME will have several teams, representing the Helpdesk and the IT Operations teams. Users can have various roles as members of teams, and may be [managers](https://support.pagerduty.com/docs/advanced-permissions#team-roles) or [responders](https://support.pagerduty.com/docs/advanced-permissions#team-roles) depending on what they will be required to do in PagerDuty. ACME will be making use of a newer feature of PagerDuty, [team hierarchies](https://support.pagerduty.com/docs/team-hierarchy). Team relationships in the hierarchy will allow ACME's teams to share information and access to objects in a more granular way.
 
-Users are added to a team with the `pagerduty_team_memebership` [resource]. 
+Users are added to a team with the `pagerduty_team_membership` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/team_membership). 
 ```
 resource "pagerduty_team_membership" "team_helpdesk_user_01" {
   user_id = pagerduty_user.helpdesk_user01.id
@@ -68,7 +69,7 @@ A [schedule](https://support.pagerduty.com/docs/schedule-basics) in PagerDuty de
 
 All the teams in the ACME account will be configured in the same timezone, "America/New York" for US Eastern time. A PagerDuty account will have a default timezone based on where the account owner is located, but individual schedules can have their own timezones if that is more appropriate for teams in different regions using the same PagerDuty account.
 
-The PagerDuty Terraform provider includes the `pagerduty_schedule` [resource] for creating and managing schedules. Since our Terraform is broken out into multiple example files, the teams are also defined locally so the `schedules.tf` file can be used separately. You can also define users, teams, and schedules in a single Terraform plan and reference the objects directly. 
+The PagerDuty Terraform provider includes the `pagerduty_schedule` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/schedule) for creating and managing schedules. Since our Terraform is broken out into multiple example files, the teams are also defined locally so the `schedules.tf` file can be used separately. You can also define users, teams, and schedules in a single Terraform plan and reference the objects directly. 
 
 ### Help Desk Schedules
 ACME's Help Desk has two schedules: one for the *Day Shift* and one for the *Night Shift*. 
@@ -107,7 +108,8 @@ The *Night Shift* schedule for Help Desk Team B works in a similar way, but with
 - The shift rotation is 24 hours - a new person will be on call every day.
 - Each day, starting at 8:00 PM, the team oncall will receive notifications. Help Desk Team B will be on call for 12 hours of the 24-hour shift, 8:00 PM until 8:00 AM the next day.
 
-These two schedules will be complimentary when they are used in an *Escalation Policy*. They could also be combined using different [layers] of the same schedule. This example divides the two shifts up for flexibility, but having a single schedule with two time-based layers is also useful in many cases. **Add the doc for follow-the-sun example**.
+These two schedules will be complimentary when they are used in an *Escalation Policy*. They could also be combined using different [layers](https://support.pagerduty.com/docs/schedule-basics#schedule-layers) of the same schedule. This example divides the two shifts up for flexibility, but having a single schedule with two time-based layers is also useful in many cases.
+
 
 ### IT Operations Schedules
 
@@ -141,7 +143,7 @@ When a schedule is created in PagerDuty, the users are included individually. Us
 ### Why Are Team Members Added Directly?
 When a new user is added to a PagerDuty team, they might not be ready for on call duties! New users can still see services, incidents, and other PagerDuty objects in the account once their `user` is added, but to be on call, they'll need to be included explicitly!
 
-## Other Schedules
+### Other Schedules
 There are some use cases where a single user is on call continuously. Hopefully, these are for low-priority incidents! Often a single user schedule is helpful for specific types of escalations or specialty services that require restricted access, specific knowledge, or other limited resources.
 
 Fred Flores is the glue that holds much of ACME's IT Operations together. He's been with the company for decades, and built many of the original services. Since Fred is knowledgeable about many services, he's not normally on call for any of the IT sub-teams, but he has his own dedicated schedule just in case he's needed for esoteric incidents, escalations, or emergencies.
@@ -159,7 +161,8 @@ resource "pagerduty_schedule" "sucks_to_be_fred" {
   }
 }
 ```
-
+### Complex Schedules
+It's possible to configure PagerDuty on call schedules in a variety of ways to meet an organization's needs. There are a number of different examples documented in the [knowledge base](https://support.pagerduty.com/docs/schedule-examples) as well as in the [best practices](https://community.pagerduty.com/forum/t/follow-the-sun-schedules/284) on the [community forum](https://community.pagerduty.com).
 
 ## Escalation Policies
 
