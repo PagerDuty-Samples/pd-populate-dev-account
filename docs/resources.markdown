@@ -214,6 +214,48 @@ Another common pattern for Help Desk and NOC-type teams is to make use of [round
 
 ## Services
 
+*Services* are how PagerDuty represents pieces of work. Most of the services in a PagerDuty account will represent some kind of technical service - web applications, middleware, databases - but services can also represent [workflows](link to services post). A service can be anything that might need attention, and is wholly owned by a single team.
+
+Since ACME is looking to create specific processes for incident response around their technical services, those are what will be configured first. Each service is created with the `pagerduty_service` [resource]. A service has a unique `name` and an `escalation_policy` from the policies that were created earlier. There are a number of optional configurations as well. ACME will start out with some basic configurations to try out until they determine how well their new procedures are working. 
+
+The two options they've decided on are `auto_resolve_timeout` and `acknowledgement_timeout`:
+- `auto_resolve_timeout` will automatically resolve incidents if they are left idle for more than 4 hours. **Is this a good thing to be setting in an example?**
+- `acknowledgement_timeout` will re-escalate an incident and begin notifying people if not resolved within 10 minutes. **oh yeah, this is a terrible idea, why would this be in the examples**
+
+```
+resource "pagerduty_service" "service_CRM" {
+  name                    = "CRM"
+  auto_resolve_timeout    = 14400
+  acknowledgement_timeout = 600
+  escalation_policy       = pagerduty_escalation_policy.it_crm.id
+  alert_creation          = "create_alerts_and_incidents"
+}
+```
+
+ACME will create services for their *CRM* application, as well as *Web*, *Mainframe*, and *Core IT Services*. These four services will start out as catch-alls for any alerts related to these services and are configured to notify the appropriate teams.
+
+ACME's Core IT Services team also wants to split out some of their alerts to specific services for better tracking and notification of stakeholders. These services are set up the same as the main services, and they are all configured to use the Core Services escalation policy. For example, they have a service for each of *Core DNS Services* and *Core VMware Services*:
+
+```
+resource "pagerduty_service" "service_dns" {
+  name                    = "Core DNS Services"
+  auto_resolve_timeout    = 14400
+  acknowledgement_timeout = 600
+  escalation_policy       = pagerduty_escalation_policy.it_core.id
+  alert_creation          = "create_alerts_and_incidents"
+}
+
+resource "pagerduty_service" "service_vmware" {
+  name                    = "Core VMware Services"
+  auto_resolve_timeout    = 14400
+  acknowledgement_timeout = 600
+  escalation_policy       = pagerduty_escalation_policy.it_core.id
+  alert_creation          = "create_alerts_and_incidents"
+}
+```
+### Business Services
+
 ## Integrations
 
+PagerDuty *Integrations* allow PagerDuty services to receive information from outside of PagerDuty. This information can be alerts from monitoring systems, build systems, physical hardware and facilities, or any number of other sources.  PagerDuty can receive alerts from over [700](https://pagerduty.com/integrations) sources using published integrations, and teams can create their own integrations if one isn't available for their system. 
 
