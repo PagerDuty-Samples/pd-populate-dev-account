@@ -258,9 +258,9 @@ resource "pagerduty_service" "service_vmware" {
 }
 ```
 ### Business Services
-*Business Services* are a special type of service - they are configured in PagerDuty to be part of the service graph, but they are not able to receive alerts or send notifications. They are helpful when assessing the impact of an incident on users or customers, particularly if customers are contacting a support team to report that something isn't working. Users don't know that a database query is running too slowly, they only see that the "shopping cart page is slow" or "it's taking too long to log in". 
+[*Business Services*](https://support.pagerduty.com/docs/business-services) are a special type of service - they are configured in PagerDuty to be part of the [service graph](https://support.pagerduty.com/docs/service-graph), but they are not able to receive alerts or send notifications. They are helpful when assessing the impact of an incident on users or customers, particularly if customers are contacting a support team to report that something isn't working. Users don't know that a database query is running too slowly, they only see that the "shopping cart page is slow" or "it's taking too long to log in". 
 
-As ACME builds their services in PagerDuty, they'll construct service graphs for related services and establish relationships between technical services and business services.  Business services are created using the `pagerduty_business_service` Terraform [resource]. They have fewer configuration options than regular technical services, and only `name` is required. ACME's business services will be configured with `name`, `description`, `point_of_contact` (for information purposes, not notifications), and `team` (for permissions, not notifications):
+As ACME builds their services in PagerDuty, they'll construct service graphs for related services and establish relationships between technical services and business services.  Business services are created using the `pagerduty_business_service` Terraform [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/business_service). They have fewer configuration options than regular technical services, and only `name` is required. ACME's business services will be configured with `name`, `description`, `point_of_contact` (for information purposes, not notifications), and `team` (for permissions, not notifications):
 ```
  resource "pagerduty_business_service" "IT" {
   name             = "IT Services"
@@ -275,9 +275,9 @@ ACME will start with three business services: *IT Services*, *Manufacturing*, an
 ### Service Graph
 In addition to simply creating services, ACME wants to make use of PagerDuty's [service graph](https://support.pagerduty.com/docs/service-graph). Service Graph allows PagerDuty users to create relationships among the various services in a PagerDuty account. Users with a service graph configuration can more easily determine the potential impact of an incident on a backend service by seeing what other services might be affected.
 
-The combination of business and technical services into a service graph will give ACME's executive team a visual representation of the health of their services at any given time, via the [status page].
+The combination of business and technical services into a service graph will give ACME's executive team a visual representation of the health of their services at any given time, via the [status page](https://support.pagerduty.com/docs/status-pages).
 
-To create the relationships among services in PagerDuty, the services are linked via *dependencies*. These are configured via Terraform with the `pagerduty_service_dependency` [resource]. Each dependency resource must contain a `dependent_service` and a `supporting_service`. The *dependent service* is one that consumes or makes use of a *supporting service* in some way and could be impacted if the *supporting service* experiences an incident. 
+To create the relationships among services in PagerDuty, the services are linked via *dependencies*. These are configured via Terraform with the `pagerduty_service_dependency` [resource](https://registry.terraform.io/providers/PagerDuty/pagerduty/latest/docs/resources/service_dependency). Each dependency resource must contain a `dependent_service` and a `supporting_service`. The *dependent service* is one that consumes or makes use of a *supporting service* in some way and could be impacted if the *supporting service* experiences an incident. 
 
 ACME is connecting a number of technical services to their business services for better visibility. For example, the *Sales* business service depends on the *CRM* service, and if there is an incident on *CRM*, everyone on the Sales team could be impacted:
 ```
@@ -298,5 +298,5 @@ When ACME's users view the service graph in the web UI, they'll be able to tell 
 
 ## Integrations
 
-PagerDuty *Integrations* allow PagerDuty services to receive information from outside of PagerDuty. This information can be alerts from monitoring systems, build systems, physical hardware and facilities, or any number of other sources.  PagerDuty can receive alerts from over [700](https://pagerduty.com/integrations) sources using published integrations, and teams can create their own integrations if one isn't available for their system. 
+PagerDuty [*Integrations*](https://support.pagerduty.com/docs/services-and-integrations#add-integrations-to-an-existing-service) allow PagerDuty services to receive information from outside of PagerDuty. This information can be alerts from monitoring systems, build systems, physical hardware and facilities, or any number of other sources.  PagerDuty can receive alerts from over [700](https://pagerduty.com/integrations) sources using published integrations, and teams can create their own integrations if one isn't available for their system. 
 
