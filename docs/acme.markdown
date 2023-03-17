@@ -2,6 +2,7 @@
 layout: page
 title: ACME Inc Needs PagerDuty
 permalink: /acme/
+nav_order: 2
 ---
 ![ACME Logo](/img/acme-mark.png){: style="float: left"}
 *At Acme Inc, our mission is to provide high-quality widgets that meet the needs of our customers while maintaining the highest levels of customer service and satisfaction. We strive to be a leader in the industry by continuously improving our products, processes, and customer experiences.*
